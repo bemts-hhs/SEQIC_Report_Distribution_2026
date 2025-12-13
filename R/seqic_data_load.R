@@ -6,11 +6,11 @@
 ###_____________________________________________________________________________
 
 # Secure creds and path
-path_2020 <- Sys.getenv("FILE_PATH_2021")
-path_2021 <- Sys.getenv("FILE_PATH_2022")
-path_2022 <- Sys.getenv("FILE_PATH_2023")
+path_2021 <- Sys.getenv("FILE_PATH_2021")
+path_2022 <- Sys.getenv("FILE_PATH_2022")
+path_2023 <- Sys.getenv("FILE_PATH_2023")
 path_2023 <- Sys.getenv("FILE_PATH_2024")
-path_2024 <- Sys.getenv("FILE_PATH_2025")
+path_2025 <- Sys.getenv("FILE_PATH_2025")
 
 # population files environment variables ----
 iowa_county_pops_path <- Sys.getenv("IOWA_COUNTY_POPS")
@@ -273,7 +273,7 @@ age_group_pops_final <- age_group_pops |>
   ) |>
 
   # Year #1 here is the base year at 4/1/2020
-  dplyr::filter(YEAR != 1) |> # 7/1/2020 - 7/1/2024 pop estimates
+  dplyr::filter(YEAR != 1) |> # 7/1/2021 - 7/1/2025 pop estimates
 
   # Add 2018 to each year so that 2 == 2020, 3 == 2021, 4 == 2022, 5 == 2023,
   # and 6 == 2024, 7 == 2025, which is the intended meaning

@@ -1,7 +1,7 @@
-# IOWA SEQIC REPORT PREP 2024 ----------------------------------------------
-# This script prepares for the analyses using the `traumar` package v1.2.0
+# IOWA SEQIC REPORT PREP 2025 ----------------------------------------------
+# This script prepares for the analyses using the `traumar` package
 # For the shapefiles, it is assumed that the files are downloaded from
-# https://www.census.gov/cgi-bin/geo/shapefiles/index.php using the year 2024
+# https://www.census.gov/cgi-bin/geo/shapefiles/index.php using the year 2025
 # and then utilizing the Counties (and equivalent), States (and equivalent), and
 # Zip Code Tabulation Areas (ZCTAS) options in the dropdown dialogue to download
 # the files manually and put them in the directory used here.
