@@ -5,21 +5,28 @@
 ### [DATE] for 2025 data, for 2021-2024 data - [DATE]
 ###_____________________________________________________________________________
 
-# Secure creds and path
+# Secure creds and path ----
 path_2021 <- Sys.getenv("FILE_PATH_2021")
 path_2022 <- Sys.getenv("FILE_PATH_2022")
 path_2023 <- Sys.getenv("FILE_PATH_2023")
-path_2023 <- Sys.getenv("FILE_PATH_2024")
+path_2024 <- Sys.getenv("FILE_PATH_2024")
 path_2025 <- Sys.getenv("FILE_PATH_2025")
 
-# population files environment variables ----
-iowa_county_pops_path <- Sys.getenv("IOWA_COUNTY_POPS")
-iowa_county_age_pops_path <- Sys.getenv("IOWA_COUNTY_AGE_POPS")
-us_standard_pops_path <- Sys.getenv("US_STANDARD_POPS")
-iowa_state_age_pops_path <- Sys.getenv("IOWA_STATE_POPS")
+# Open connection to location file ----
 iowa_counties_districts_path <- Sys.getenv("iowa_counties_districts")
 
-# load files from source
+###_____________________________________________________________________________
+# Get location data into memory for calculations
+###_____________________________________________________________________________
+
+# classify counties in the data ----
+location_data <- readxl::read_excel(path = iowa_counties_districts_path)
+
+###_____________________________________________________________________________
+# Trauma data
+###_____________________________________________________________________________
+
+# load files from source ----
 trauma_2021 <-
   readr::read_csv(
     path_2021
@@ -41,7 +48,7 @@ trauma_2025 <-
     path_2025
   )
 
-# Get data into one file for all years for reporting across years
+# Get data into one file for all years for reporting across years ----
 # Although identical processing workflows were followed for all files, the zip
 # codes seem to get formatted differently between years, fix those
 trauma_2021_2025 <- dplyr::bind_rows(
@@ -218,10 +225,3 @@ trauma_2021_2025 <- dplyr::bind_rows(
     ),
     .after = Age_Range
   )
-
-###_____________________________________________________________________________
-# Get location data into memory for calculations
-###_____________________________________________________________________________
-
-# classify counties in the data ----
-location_data <- readxl::read_excel(path = iowa_counties_districts_path)

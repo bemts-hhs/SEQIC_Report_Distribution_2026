@@ -735,208 +735,8 @@ join_comparison_data <- function(data, data_level, data_region) {
 
 # DATA EXPORT FACILITIES =====================================================
 
-###_____________________________________________________________________________
-# send_facility_emails()
-#
-# Sends individualized emails with attachments to facilities listed in an XLSX
-# file. Each row in the input file should contain the trauma program manager
-# (tpm), email address, facility name (tcf), verification, and file folder name.
-#
-# For each recipient, the function:
-# - Locates the folder of files using a secure base path plus the file folder name
-# - Attaches all files found in that folder plus a common guide file
-# - Sends an HTML email with a consistent, styled message via Microsoft365R Outlook
-# - Logs success/failure for each email to a CSV file
-#
-# Environment variables used:
-#   TPM_CONTACTS - path to XLSX file with contact info
-#   FACILITY_PATH - root directory for facility-specific report folders
-#   GUIDE_PATH - path to a common guide PDF attached to all emails
-#
-# Input:
-#   recipient_file - path to the XLSX contact file (default: Sys.getenv("TPM_CONTACTS"))
-#   base_path     - root folder path for reports (default: Sys.getenv("FACILITY_PATH"))
-#   log_path      - path to write the email send log (default: "email_log.csv")
-#   guide_path    - path to common guide file (default: Sys.getenv("GUIDE_PATH"))
-#
-# Requirements:
-#   Packages: blastula, Microsoft365R, dplyr, readxl, glue, fs, purrr, tibble, cli
-#
-# Notes:
-#   - Uses purrr::pwalk to iterate rowwise, preserving individual TPM and facility info
-#   - HTML email enforces Consolas monospace font, 14px font size, line height 1.4
-#   - Bold formatting for sender name and position included in email body
-#   - All paths and emails handled securely without hardcoding
-###_____________________________________________________________________________
-send_facility_emails <- function(
-  recipient_file = Sys.getenv("TPM_CONTACTS"), # Path to XLSX file with recipients
-  base_path = Sys.getenv("FACILITY_PATH"), # Root folder for facility report files
-  log_path = "email_log.csv", # File path for email send log CSV
-  guide_path = Sys.getenv("GUIDE_PATH") # Path to a common guide PDF attachment
-) {
-  # Authenticate and get Microsoft 365 Outlook client for email sending
-  outl <- Microsoft365R::get_business_outlook()
-
-  # Read recipient details from Excel file, expecting columns: tpm, email, tcf, file
-  recipients <- readxl::read_excel(recipient_file)
-
-  # Initialize an empty tibble to log each email's send attempt and outcome
-  log <- tibble::tibble(
-    timestamp = as.POSIXct(character()), # Time of email processing attempt
-    facility = character(), # Facility name (tcf)
-    email = character(), # Recipient email address
-    status = character(), # Send status: sent, skipped, failed
-    message = character() # Additional status message or error
-  )
-
-  # Iterate rowwise over recipient data with purrr::pwalk (parallel walk)
-  purrr::pwalk(
-    list(
-      tpm = recipients$tpm, # Trauma Program Manager name
-      email = recipients$email, # Recipient email address
-      tcf = recipients$tcf, # Trauma Center Facility name
-      file = recipients$file # Facility folder name for attachments
-    ),
-    function(tpm, email, tcf, file) {
-      # Record current timestamp for this email operation
-      timestamp <- Sys.time()
-
-      # Inform console of current email processing (for progress tracking)
-      cli::cli_inform("Processing email: {email} | file: {file}")
-
-      # Check if the file/folder name is missing or empty; skip if so
-      if (is.na(file) || trimws(file) == "") {
-        log <<- dplyr::add_row(
-          log,
-          tibble::tibble(
-            timestamp,
-            facility = tcf,
-            email,
-            status = "skipped",
-            message = "Missing file location"
-          )
-        )
-        return() # Skip to next iteration
-      }
-
-      # Construct full path to the facility folder using base path + file folder
-      facility_path <- fs::path(base_path, file)
-
-      # Check if the folder exists; log failure and skip if it does not
-      if (!fs::dir_exists(facility_path)) {
-        log <<- dplyr::add_row(
-          log,
-          tibble::tibble(
-            timestamp,
-            facility = tcf,
-            email,
-            status = "failed",
-            message = "Directory not found"
-          )
-        )
-        return() # Skip to next iteration
-      }
-
-      # List all files within the facility folder for attachment
-      attachments <- fs::dir_ls(facility_path, type = "file")
-      # Combine facility attachments with the guide file to attach both
-      all_attachments <- c(attachments, guide_path)
-
-      # Compose the HTML email body with inline CSS for Consolas font and styling
-      body_text <- glue::glue(
-        '
-<div style="font-family: Consolas, monospace; font-size: 14px; line-height: 1.4;">
-  <p>Dear {tpm},</p>
-
-  <p>
-    Attached is your facility’s (<strong>{tcf}</strong>) risk-adjusted mortality metrics and SEQIC (System Evaluation and Quality Improvement Committee) performance report for the previous five years (including the target reporting year). The attached files include your center’s performance across all 13 SEQIC indicators and are intended to support your local quality improvement efforts.
-  </p>
-
-  <p>
-    Along with the statistical files, I have also attached a guide to help you navigate the reports. Please use this guide, as it will do a good job of answering most of the questions you will have up front about the statistics.
-  </p>
-
-  <p>
-    If you have questions about any metrics, methodology, or would like technical assistance interpreting the results, please don’t hesitate to contact us.
-  </p>
-
-  <p>Thank you for your continued commitment to trauma system improvement in Iowa.</p>
-
-  <p>
-    <strong>Nicolas Foss, Ed.D., MS<br>
-    Epidemiologist</strong><br>
-    Bureau of Emergency Medical and Trauma Services<br>
-    Bureau of Health Statistics<br>
-    321 E 12th St., Des Moines, IA 50319<br>
-    515-985-9627 mobile<br>
-    nicolas.foss@hhs.iowa.gov<br>
-    <a href="https://hhs.iowa.gov/public-health/emergency-medical-services-trauma">https://hhs.iowa.gov/public-health/emergency-medical-services-trauma</a><br>
-    <a href="https://hhs.iowa.gov/public-health/health-statistics">https://hhs.iowa.gov/public-health/health-statistics</a>
-  </p>
-</div>
-'
-      )
-
-      # Create blastula email object with HTML body and simple footer
-      body <- blastula::compose_email(
-        body = blastula::html(body_text),
-        footer = blastula::md("This email was sent via Microsoft365R.")
-      )
-
-      # Use tryCatch to handle any errors during email creation and sending
-      tryCatch(
-        {
-          # Create the email object specifying recipient, subject, and body
-          em <- outl$create_email(
-            body = body,
-            subject = glue::glue(
-              "CONFIDENTIAL - 2024 Risk Adjusted Mortality Metrics and SEQIC Reports for {tcf}"
-            ),
-            to = email
-          )
-
-          # Add all attachments (facility reports + guide) to the email
-          purrr::walk(all_attachments, em$add_attachment)
-
-          # Send the email through Outlook client
-          em$send()
-
-          # Log successful send status with "OK" message
-          log <<- dplyr::add_row(
-            log,
-            tibble::tibble(
-              timestamp,
-              facility = tcf,
-              email,
-              status = "sent",
-              message = "OK"
-            )
-          )
-        },
-        error = function(e) {
-          # Log any error encountered during email processing with the error message
-          log <<- dplyr::add_row(
-            log,
-            tibble::tibble(
-              timestamp,
-              facility = tcf,
-              email,
-              status = "failed",
-              message = e$message
-            )
-          )
-        }
-      )
-    }
-  )
-
-  # Write the complete log of all email attempts and results to CSV
-  readr::write_csv(log, fs::path(base_path, log_path))
-}
-
 ### state output folder
 state_output_folder <- Sys.getenv("STATE_OUTPUT_FILE_PATH")
-
 
 # export_state_data
 # Export State Data to CSV
@@ -981,7 +781,8 @@ export_state_data <- function(
 
   # Create dynamic output path
   # Construct the output directory path using the provided root directory.
-  output_path <- fs::path(output_dir_root)
+  output_path <- fs::path(output_dir_root, subfolder)
+
   # Create the directory if it does not exist.
   fs::dir_create(output_path)
 
@@ -989,7 +790,6 @@ export_state_data <- function(
   # Construct the full file path by combining the output directory, subfolder, and the name of 'x' with a ".csv" extension.
   file_path <- fs::path(
     output_path,
-    subfolder,
     paste0(x_name, ".csv")
   )
 
