@@ -10,11 +10,16 @@
 
 # Regions
 seqic_indicator_12_regions <- trauma_2021_2025 |>
+  dplyr::filter_out(
+    Facility_State_ID %in%
+      c(9250167, 9770078, 9520017, 9770079, 9020170) &
+      Year < 2025
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year", "Service Area"),
@@ -25,11 +30,20 @@ seqic_indicator_12_regions <- trauma_2021_2025 |>
 
 # Level
 seqic_indicator_12_level <- trauma_2021_2025 |>
+  dplyr::mutate(
+    Time_Lag_Days = ifelse(
+      Facility_State_ID %in%
+        c(9250167, 9770078, 9520017, 9770079, 9020170) &
+        Year < 2025,
+      NA_real_,
+      Time_Lag_Days
+    )
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year", "Level_I_II"),
@@ -40,11 +54,20 @@ seqic_indicator_12_level <- trauma_2021_2025 |>
 
 # Agency-specific
 seqic_indicator_12_results <- trauma_2021_2025 |>
+  dplyr::mutate(
+    Time_Lag_Days = ifelse(
+      Facility_State_ID %in%
+        c(9250167, 9770078, 9520017, 9770079, 9020170) &
+        Year < 2025,
+      NA_real_,
+      Time_Lag_Days
+    )
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year", "Level_I_II", "Service Area", "Current Facility Name"),
@@ -63,11 +86,16 @@ seqic_indicator_12_results <- trauma_2021_2025 |>
 
 # state level
 seqic_indicator_12_results_state <- trauma_2021_2025 |>
+  dplyr::filter_out(
+    Facility_State_ID %in%
+      c(9250167, 9770078, 9520017, 9770079, 9020170) &
+      Year < 2025
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year"),
@@ -86,11 +114,16 @@ seqic_indicator_12_results_state <- trauma_2021_2025 |>
 
 # state level - by age group
 seqic_indicator_12_results_state_age <- trauma_2021_2025 |>
+  dplyr::filter_out(
+    Facility_State_ID %in%
+      c(9250167, 9770078, 9520017, 9770079, 9020170) &
+      Year < 2025
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year", "Age_Range"),
@@ -135,11 +168,16 @@ seqic_indicator_12_results_state_age <- trauma_2021_2025 |>
 
 # service areas
 seqic_indicator_12_results_service_areas <- trauma_2021_2025 |>
+  dplyr::filter_out(
+    Facility_State_ID %in%
+      c(9250167, 9770078, 9520017, 9770079, 9020170) &
+      Year < 2025
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year", "Service Area"),
@@ -158,11 +196,16 @@ seqic_indicator_12_results_service_areas <- trauma_2021_2025 |>
 
 # trauma center verification levels
 seqic_indicator_12_results_verification <- trauma_2021_2025 |>
+  dplyr::filter_out(
+    Facility_State_ID %in%
+      c(9250167, 9770078, 9520017, 9770079, 9020170) &
+      Year < 2025
+  ) |>
   traumar::seqic_indicator_12(
     level = Level,
     unique_incident_id = Unique_Incident_ID,
     facility_id = Facility_State_ID,
-    exclude_facility_list = c(9250167, 9770078, 9520017, 9770079, 9020170),
+    exclude_facility_list = NULL,
     data_entry_time = Time_Lag_Days,
     data_entry_standard = 60,
     groups = c("Year", "Level_I_II"),
