@@ -1,4 +1,4 @@
-# IOWA SEQIC REPORT PREP 2025 ----------------------------------------------
+# IOWA SEQIC REPORT PREP 2026 ----------------------------------------------
 # This script prepares for the analyses using the `traumar` package
 # For the shapefiles, it is assumed that the files are downloaded from
 # https://www.census.gov/cgi-bin/geo/shapefiles/index.php using the year 2025
