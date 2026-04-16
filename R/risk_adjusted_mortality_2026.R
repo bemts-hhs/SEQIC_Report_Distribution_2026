@@ -97,13 +97,14 @@ rm_summary_results <- trauma_2021_2025_clean |>
       data = .x,
       Ps_col = Probability_of_Survival_Calc,
       outcome_col = Alive,
-      group_vars = NULL,
-      n_samples = 1000,
+      group_vars = c("Year", "Current Facility Name"),
+      n_samples = 100,
       bootstrap_ci = TRUE,
       seed = 10232015
     )
   ) |>
   purrr::list_rbind() |>
+  dplyr::filter(!is.na(`Current Facility Name`)) |>
   dplyr::arrange(`Current Facility Name`, Year, bin_number)
 
 # Calculate metrics at the state level ----
