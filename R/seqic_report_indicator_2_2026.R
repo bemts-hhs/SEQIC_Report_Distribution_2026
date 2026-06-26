@@ -162,7 +162,7 @@ seqic_indicator_2_results_verification <- trauma_2021_2025 |>
 
 # hospital reporting
 export_seqic_data(
-  agency_names = unique(trauma_2024$`Current Facility Name`),
+  agency_names = unique(trauma_2025$`Current Facility Name`),
   facility_name_col = `current facility name`,
   seqic_results = seqic_indicator_2_results,
   indicator = "indicator_2"

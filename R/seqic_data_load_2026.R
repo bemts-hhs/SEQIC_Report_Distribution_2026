@@ -46,6 +46,20 @@ trauma_2024 <-
 trauma_2025 <-
   readr::read_csv(
     path_2025
+  ) |>
+  dplyr::mutate(
+    `Current Facility Name` = ifelse(
+      grepl(
+        pattern = "CIty",
+        x = `Current Facility Name`
+      ),
+      stringr::str_replace_all(
+        string = `Current Facility Name`,
+        pattern = "CIty",
+        replacement = "City"
+      ),
+      `Current Facility Name`
+    )
   )
 
 # Get data into one file for all years for reporting across years ----
@@ -149,8 +163,11 @@ trauma_2021_2025 <- dplyr::bind_rows(
                               as.Date("2024-12-01"),
                           "Level IV",
                           ifelse(
-                            `Current Facility Name` ==
-                              "UnityPoint Health - St. Luke's Hospital, Sioux CIty" &
+                            `Current Facility Name` %in%
+                              c(
+                                "UnityPoint St. Luke's Downtown",
+                                "MercyOne Siouxland Medical Center"
+                              ) &
                               ED_Acute_Care_Admission_Date <
                                 as.Date("2024-10-01"),
                             "Level I & II",
@@ -224,4 +241,18 @@ trauma_2021_2025 <- dplyr::bind_rows(
       )
     ),
     .after = Age_Range
+  ) |>
+  dplyr::mutate(
+    `Current Facility Name` = ifelse(
+      grepl(
+        pattern = "CIty",
+        x = `Current Facility Name`
+      ),
+      stringr::str_replace_all(
+        string = `Current Facility Name`,
+        pattern = "CIty",
+        replacement = "City"
+      ),
+      `Current Facility Name`
+    )
   )

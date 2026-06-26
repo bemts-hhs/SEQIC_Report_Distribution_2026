@@ -749,7 +749,7 @@ seqic_indicator_9_results_verification <- seqic_indicator_9_results_verification
 
 # overall results from first two list elements in the traumar output
 export_seqic_data(
-  agency_names = unique(trauma_2024$`Current Facility Name`),
+  agency_names = unique(trauma_2025$`Current Facility Name`),
   facility_name_col = `current facility name`,
   seqic_results = seqic_indicator_9_results,
   indicator = "indicator_9"
@@ -757,7 +757,7 @@ export_seqic_data(
 
 # results by risk group
 export_seqic_data(
-  agency_names = unique(trauma_2024$`Current Facility Name`),
+  agency_names = unique(trauma_2025$`Current Facility Name`),
   facility_name_col = `current facility name`,
   seqic_results = seqic_indicator_9_results_risk,
   indicator = "indicator_9_risk"
@@ -765,7 +765,7 @@ export_seqic_data(
 
 # results by activations and risk group
 export_seqic_data(
-  agency_names = unique(trauma_2024$`Current Facility Name`),
+  agency_names = unique(trauma_2025$`Current Facility Name`),
   facility_name_col = `current facility name`,
   seqic_results = seqic_indicator_9_results_activations_risk,
   indicator = "indicator_9_activations_risk"

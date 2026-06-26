@@ -554,7 +554,7 @@ seqic_indicator_8_results_verification <- seqic_indicator_8_results_verification
 
 # hospital reporting
 export_seqic_data(
-  agency_names = unique(trauma_2024$`Current Facility Name`),
+  agency_names = unique(trauma_2025$`Current Facility Name`),
   facility_name_col = `current facility name`,
   seqic_results = seqic_indicator_8_results,
   indicator = "indicator_8"
